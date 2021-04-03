@@ -1,13 +1,14 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/examples/Note-App.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js'
     },
     devServer: {
-        contentBase: path.resolve(__dirname, 'dist')
+        contentBase: path.resolve(__dirname, 'dist'),
+        historyApiFallback: true
     },
     module: {
         rules: [
