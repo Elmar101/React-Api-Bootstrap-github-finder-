@@ -1,35 +1,53 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useReducer} from 'react'
 import ReactDOM from 'react-dom';
 import '../styles/main.scss';
 
+const notesReducer = ( state, action) =>{
+    switch(action.type){
+        case 'POPULATE_NOTES': 
+            return action.notes;
+        
+        case 'ADD_NOTES':
+            return [...state, { title: action.title , body:action.body }];
+        
+        case 'REMOVE_NOTES':
+            return state.filter( note => note.title !== action.title );
+
+        default: 
+            return state;
+    }
+}
 const NoteApp = () => {
-    const [ notes, setNotes ] = useState([]);
+    //const [ notes, setNotes ] = useState([]);
+    const [notes,dispatch] = useReducer( notesReducer, []);
     const [ title, setTitle ] = useState('');
     const [ body, setBody ] = useState('');
+
 
     const addNote = (e) => {
         e.preventDefault();
         if(title || body){
-            setNotes( [...notes , { title , body } ] );
+         dispatch( {type:'ADD_NOTES', title, body} );
             setTitle('');
             setBody('');
         }
     }
 
     const removeNote = (title) => {
-        setNotes( notes.filter( note => note.title !==title ) )
+        dispatch({type:'REMOVE_NOTES', title });
     }
 
     useEffect(()=> {
         const notesData = JSON.parse(localStorage.getItem('notes'));
         if( notesData){
-            setNotes( notesData );
+            dispatch( {type: 'POPULATE_NOTES', notes: notesData} )
         }
     },[])
 
     useEffect(()=> {
         localStorage.setItem('notes', JSON.stringify(notes));
     },[notes])
+
     return (
         <div className="container p-5">
             <div className="card mb-3">
